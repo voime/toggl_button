@@ -39,7 +39,7 @@ int currentLedState = 0;      // variable to led status
 int lastButtonState = 0;      // vairable for button last status
 long previousMillis = 0;      // will store last time LED was updated
 long interval = 5000;         // interval at which to check toggl status (milliseconds)
-
+long learnButtonHold = 1000;
 long capaciveSensity = 100;
 int debuging = 1;
 
@@ -113,8 +113,7 @@ void loop() {
 
 void togglCurrent() {
   Process p;
-  String command = "curl -s -k -u " + apiKey + ":api_token -X GET https://www.toggl.com/api/v8/time_entries/current";  
-  String command = "python /root/toggl_button/check.py"
+  String command = "python /root/toggl_button/check.py";
   Serial.println(command);
   p.runShellCommand(command);
    
@@ -129,7 +128,7 @@ void togglCurrent() {
 	json.trim();
 	Serial.println(json);    
 	
-	togglState = json;
+	String togglState = json;
 
 	long cap =  cs.capacitiveSensor(30);
 
@@ -180,7 +179,6 @@ void togglStop() {
 	  }
 	  Serial.flush();
   }
-}
 
 void togglLearn() {
 	Process p;
@@ -192,7 +190,6 @@ void togglLearn() {
 		Serial.print(c);
 	  }
 	  Serial.flush();
-  }
 }
 
 void httpTest(){
