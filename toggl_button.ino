@@ -1,7 +1,19 @@
 /*
-  Toggl tButton
+  Toggl Button
 
-Creates Toggl timetracker event if putton pressed.
+You can control Toggl timetracker.
+
+1. Set toggl api key on file api_key.txt
+2. Start Toggl timer, with description and project.
+3. Hold down learn button so long if both leds are on
+4. If project is learned and running then red led is on
+5. Push touch button stop timer and green led going on
+6. Push again toutch button and red led going on
+
+If you start/stop timer on website then leds switches less than 10 seconds to right state
+Device switched only last learned project. So if you want start switching new project just start it on web and press learn button.
+If no internet connection, then both leds are off
+
 
  The circuit:
  * LEDs anode attached to ground
@@ -38,12 +50,11 @@ const int greenPin = 6;       // the number of the GREEN LED pin
 int currentLedState = 0;      // variable to led status
 int lastButtonState = 0;      // vairable for button last status
 long previousMillis = 0;      // will store last time LED was updated
-long interval = 5000;         // interval at which to check toggl status (milliseconds)
+long interval = 10000;         // interval at which to check toggl status (milliseconds)
 long learnButtonHold = 1000;
 long capaciveSensity = 100;
-int debuging = 1;
 
-HttpClient client;                                                      // define http client connection
+HttpClient client;
 CapacitiveSensor cs = CapacitiveSensor(capaciveSendPin,capaciveRecPin);
 
 void setup() {
@@ -54,8 +65,6 @@ void setup() {
   pinMode(greenPin, OUTPUT);
   // initialize the pushbutton pin as an input:
   pinMode(learnButtonPin, INPUT);
-//  togglCurrent(); // get current values
-//getParameters();
 }
 
 void loop() {
@@ -70,150 +79,103 @@ void loop() {
       if (learnButtonStateRepeat == HIGH){
         togglLearn();
       }
-  } 
-
-
+  }
+  
   int buttonState;
   long cap =  cs.capacitiveSensor(30);
-
+  
   if (cap > capaciveSensity){
 	buttonState = 1;
   }else{
 	buttonState = 0;
   }
   if (buttonState != lastButtonState){
-	Serial.println("CAP:" + cap);
+	//Serial.println("CAP:" + cap);
 	if (buttonState == HIGH ){
-	  Serial.println("BUTTON PRESS");
-	  // muuda praegune staatus vastupidiseks
-	  //currentLedState = !currentLedState;
-	  // muuda ära led
-  //    switchLed ( currentLedState );
-	  
 	  // make REST calls to toggl API
-	  if (currentLedState == 0){
-		togglStart();
-	  }else{
+	  if (currentLedState == 1){
 		togglStop();
+	  }else if (currentLedState == 2){
+		togglStart();
 	  }
 	  
 	  delay(10);
 	  } else {
-		Serial.println("BUTTON RELEASE");
+		//Serial.println("BUTTON RELEASE");
 	  }
   }
   lastButtonState = buttonState;
   // make toggl chech request
   if(currentMillis - previousMillis > interval) {
-	// save the last time
-	previousMillis = currentMillis;
-	//togglCurrent();
+    previousMillis = currentMillis;
+    //Serial.println(currentLedState);
+    togglCheck();
   } 
 }
 
-void togglCurrent() {
-  Process p;
+void togglCheck() {
   String command = "python /root/toggl_button/check.py";
-  Serial.println(command);
-  p.runShellCommand(command);
-   
-	String json = "";    
-	while (p.available()>0) {
-	  char c = p.read();
-	  json += String(c);
-	  //Serial.print(c);
-	}
-
-	//Serial.flush();
-	json.trim();
-	Serial.println(json);    
-	
-	String togglState = json;
-
-	long cap =  cs.capacitiveSensor(30);
-
-	Serial.println("TOGGL:"+String(togglState));
-	Serial.println("LED:"+String(currentLedState));
-	Serial.println("CAP:"+String(cap));
-  
-  // if (togglState != currentLedState){
-	 //  Serial.println("TOGGL STATE CHANGED");
-	 //  // muuda praegune staatus toggleks
-	 //  currentLedState = togglState;
-	 //  // muuda ära led
-	 //  switchLed(currentLedState);
-	 //  delay(10);
-  // }
+  int result = getResult(command);
+  switchLed(result);
+  if (result == 5){
+    togglLearn();
+  }
 }
 
 void togglStart() {
-  Process p;
-
+  switchLed(1);
   String command = "python /root/toggl_button/start.py";
-
-  Serial.println(command);
-  p.runShellCommand(command);
-  
-  // empty old tid value
-  String json="";
-	while (p.available()>0) {
-	  char c = p.read();
-	  json += c;
-	//  Serial.print(c);
-	}
-
-	Serial.flush();
-	json.trim(); // remove spaces and newlines
-	Serial.println(json);
-
+  int result = getResult(command);
+  switchLed(result);
 }
 
 void togglStop() {
-	Process p;
-	String command = "python /root/toggl_button/stop.py";
-	Serial.println(command);
-	p.runShellCommand(command);
-	  while (p.available()>0) {
-		char c = p.read();
-		Serial.print(c);
-	  }
-	  Serial.flush();
-  }
-
-void togglLearn() {
-	Process p;
-	String command = "python /root/toggl_button/learn.py";
-	Serial.println(command);
-	p.runShellCommand(command);
-	  while (p.available()>0) {
-		char c = p.read();
-		Serial.print(c);
-	  }
-	  Serial.flush();
+  switchLed(2)
+  String command = "python /root/toggl_button/stop.py";
+  int result = getResult(command);
+  switchLed(result);
 }
 
-void httpTest(){
-  // Make a HTTP request:
-  client.get("http://arduino.cc/asciilogo.txt");
-  // if there are incoming bytes available
-  // from the server, read them and print them:
-  while (client.available()) {
-	char c = client.read();
-	Serial.print(c);
-  }
-  Serial.flush();
-  delay(5000);
+void togglLearn() {
+  switchLed(5);
+  String command = "python /root/toggl_button/learn.py";
+  int result = getResult(command);
+  switchLed(result);
+}
+
+int getResult(String command){
+  int result = 0;	
+  Process p;
+	Serial.println(command);
+	p.runShellCommand(command);
+        while (p.running());
+	  while (p.available() > 0) {
+		char c = p.read();
+                if (isDigit(c)){
+                  result = (result * 10) + (c - '0');
+                }
+	  }
+ return result;
 }
 
 void switchLed(int ledState) {
-  if (ledState == HIGH) {
-	// turn LED on:
+  Serial.println(ledState);
+  if (ledState == 1) {
+	// time running
 	digitalWrite(redPin, HIGH);
 	digitalWrite(greenPin, LOW);
-  } else {
-	// turn LED off:
+  } else if (ledState == 2) {
+	// time stopping
 	digitalWrite(redPin, LOW);
 	digitalWrite(greenPin, HIGH);
+  } else if (ledState == 5) {
+	// learn
+	digitalWrite(redPin, HIGH);
+	digitalWrite(greenPin, HIGH);
+  } else if (ledState == 0) {
+	// no connection
+	digitalWrite(redPin, LOW);
+	digitalWrite(greenPin, LOW);
   }
   currentLedState = ledState;
 }

@@ -12,6 +12,8 @@ opkg install python-openssl
 # adds requests python module
 easy_install requests
 
+# copy files
+scp *.* root@arduino_ip:/root/toggl_button/
 
 statuses
 0 - no connection
