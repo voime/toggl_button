@@ -5,7 +5,20 @@ Ehitatud Arduino Yun baasil. Saab ühendada internetti nii kaabliga kui wifiga. 
 
 Kõigepealt käivita toggles sobiv projekt koos kirjeldusega, seejärel vajuta karbi küljel olevat Learn nuppu. Nüüd lülitab karp selgeksõpitud projekti ja muud projektid teda ei sega. Kui veebis paned projekti käima või seisma siis karp muudab vastavalt olekule värvi.
 
-Install python module requests
+
+Install
+
+Download / clone files
+
+Connect arduino yun and configure network
+
+# copy files to arduino
+scp *.* root@arduino_ip:/root/toggl_button/
+
+# login to arduino
+ssh root@arduino_ip
+
+Install python-openssl and python module requests
 
 #updates the available packages list
 opkg update
@@ -19,8 +32,25 @@ opkg install python-openssl
 # adds requests python module
 easy_install requests
 
-# copy files
-scp *.* root@arduino_ip:/root/toggl_button/
+Insert yout Toggl API key to file api_key.txt
+
+Upload toggl_button.ino file to arduino board. Need use newest IDE version 1.5
+
+
+You can control Toggl timetracker.
+
+1. Start Toggl timer, with description and project.
+2. Hold down learn button so long if both leds are on
+3. If project is learned and running then red led is on
+4. Push touch button stop timer and green led going on
+5. Push again toutch button and red led going on
+
+If you start/stop timer on website then leds switches less than 10 seconds to right state
+
+Device switched only last learned project. So if you want start switching new project just start it on web and press learn button.
+
+If no internet connection, then both leds are off
+
 
 statuses
 0 - no connection
