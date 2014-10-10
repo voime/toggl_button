@@ -1,3 +1,10 @@
+Kirjeldus eesti keeles
+Toggl timetracker nupp
+
+Ehitatud Arduino Yun baasil. Saab ühendada internetti nii kaabliga kui wifiga. Toide on microUSB kaudu. Karbil on peal puutetundlik nupp, millest pannakse aeg käima või seisma. Roheline tuli näitab et aeg seisab ja punane et käib.
+
+Kõigepealt käivita toggles sobiv projekt koos kirjeldusega, seejärel vajuta karbi küljel olevat Learn nuppu. Nüüd lülitab karp selgeksõpitud projekti ja muud projektid teda ei sega. Kui veebis paned projekti käima või seisma siis karp muudab vastavalt olekule värvi.
+
 Install python module requests
 
 #updates the available packages list
