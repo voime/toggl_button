@@ -1,0 +1,20 @@
+Install python module requests
+
+#updates the available packages list
+opkg update
+
+#it contains the easy_install command line tool
+opkg install distribute
+
+#adds ssl support to python
+opkg install python-openssl
+
+# adds requests python module
+easy_install requests
+
+
+statuses
+0 - no connection
+1 - time is running
+2 - time is stopping
+5 - no project
