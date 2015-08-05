@@ -20,4 +20,5 @@ def toProject( result ):
 	project["description"]=result["description"]
 	#if hasattr(result, 'tags'):
 	#	project["tags"]=result["tags"]
+	project["created_with"]='curl'
 	return project

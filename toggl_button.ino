@@ -38,11 +38,11 @@ If no internet connection, then both leds are off
 
 // constants won't change. They're used here to
 // set pin numbers:
-const int learnButtonPin = 12;     // the number of the pushbutton pin
-const int capaciveSendPin = 9;
-const int capaciveRecPin = 5;
+const int learnButtonPin = 3;     // the number of the pushbutton pin
+const int capaciveSendPin = 4;
+const int capaciveRecPin = 7;
 
-const int redPin =  11;       // the number of the RED LED pin
+const int redPin =  5;       // the number of the RED LED pin
 const int greenPin = 6;       // the number of the GREEN LED pin
 
 
@@ -64,7 +64,7 @@ void setup() {
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
   // initialize the pushbutton pin as an input:
-  pinMode(learnButtonPin, INPUT);
+  pinMode(learnButtonPin, INPUT_PULLUP);
 }
 
 void loop() {
@@ -73,10 +73,10 @@ void loop() {
   //int buttonState = digitalRead(buttonPin);
 
   int learnButtonState = digitalRead(learnButtonPin);
-  if (learnButtonState == HIGH){
+  if (learnButtonState == LOW){
     delay(learnButtonHold);
       int learnButtonStateRepeat = digitalRead(learnButtonPin);
-      if (learnButtonStateRepeat == HIGH){
+      if (learnButtonStateRepeat == LOW){
         togglLearn();
       }
   }
@@ -130,7 +130,7 @@ void togglStart() {
 }
 
 void togglStop() {
-  switchLed(2)
+  switchLed(2);
   String command = "python /root/toggl_button/stop.py";
   int result = getResult(command);
   switchLed(result);
