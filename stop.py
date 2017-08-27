@@ -1,7 +1,8 @@
 #!/usr/bin/python
-
 import requests, json
 from functions import *
+
+requests.packages.urllib3.disable_warnings()
 
 fTime = open(file_time,'r')
 time_id = fTime.read()
@@ -15,7 +16,7 @@ else:
 	#print r.text
 	if r:
 		result = r.json()
-		if result["data"]:
+		if result.get("data"):
 			print "2"
 		else:
 			print "1"

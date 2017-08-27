@@ -3,8 +3,8 @@
 file_project = '/root/toggl_button/project.json'
 file_time = '/root/toggl_button/time_id.txt'
 
-fApi = open('/root/toggl_button/api_key.txt','r')
-api_key = fApi.read()
+api_key = open('/root/toggl_button/api_key.txt','r').read()
+
 # TODO need fix this function
 # if attribute tags exist then write tags
 # this function converts json to dictonary and only wid, pid, tags and description keys
@@ -13,11 +13,11 @@ def toProject( result ):
 	#print result2
 	
 	#if hasattr(result, 'wid'):
-	project["wid"]=result["wid"]
+	#project["wid"]=result.get("wid")
 	#if hasattr(result, 'pid'):
-	project["pid"]=result["pid"]
+	project["pid"]=result.get("pid")
 	#if hasattr(result, 'description'):
-	project["description"]=result["description"]
+	project["description"]=result.get("description")
 	#if hasattr(result, 'tags'):
 	#	project["tags"]=result["tags"]
 	project["created_with"]='curl'

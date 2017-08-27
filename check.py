@@ -2,20 +2,24 @@
 import requests, json
 from functions import *
 
+requests.packages.urllib3.disable_warnings()
+
 url = "https://www.toggl.com/api/v8/time_entries/current"
 r = requests.get(url, auth=(api_key, 'api_token'))
+
 if r:
 	result = r.json()
+	data = result.get("data")
 	#print result
-	if result["data"]:
+	if data:
 		with open(file_project, 'r') as projectFile:
 			project = projectFile.read()
 		
 		project_array = json.loads(project)
 		
-		if result["data"]["pid"] == project_array["pid"]:
+		if data.get("pid") == project_array.get("pid"):
 			with open(file_time, 'w') as timeFile:
-					tid = result["data"]["id"]
+					tid = data.get("id")
 					json.dump(tid, timeFile)
 			# project is running
 			print "1"
